@@ -1,6 +1,6 @@
 # Svelto.ECS.Examples.Cache
 
-New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-svelto-tasks-new-example-plus-whats-coming-and-optimization-related-thoughts/ the article complements the comments in the code.
+New Parallelism Example is explained here: http://www.sebaslab.com/svelto-ecs-svelto-tasks-to-write-data-oriented-cache-friendly-multi-threaded-code-in-unity/ the article complements the comments in the code.
 
 You can add Svelto-ECS framework from the original repository or syncing it from this one using the submodule approach. 
 
