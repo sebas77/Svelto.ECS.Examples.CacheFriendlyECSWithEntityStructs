@@ -2,6 +2,7 @@
 using Svelto.Tasks;
 using System;
 using System.Collections;
+using Svelto.DataStructures;
 using UnityEngine;
 
 namespace Svelto.ECS.Example.Parallelism
@@ -81,7 +82,7 @@ namespace Svelto.ECS.Example.Parallelism
 //that must be executed on the entities.         
             int count = 0;
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
-            DataStructures.FasterReadOnlyList<BoidEntityView> _entityViews;
+            ReadOnlyCollectionStruct<BoidEntityView> _entityViews;
 #endif
 #if FOURTH_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
             BoidEntityView[] _entityViews;
@@ -93,7 +94,7 @@ namespace Svelto.ECS.Example.Parallelism
                 count = _entityViews.Count;
 #endif
 #if FOURTH_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-                _entityViews = entityViewsDB.QueryEntityViewsAsArray<BoidEntityView>(out count);           
+                _entityViews = entityViewsDB.QueryEntities<BoidEntityView>(out count);           
 #endif
                 yield return null;
             } while (count == 0);
@@ -103,7 +104,7 @@ namespace Svelto.ECS.Example.Parallelism
 
             var countn = count / numberOfThreads;
 
-            _multiParallelTask = new MultiThreadedParallelTaskCollection((uint) numberOfThreads, false);
+            _multiParallelTask = new MultiThreadedParallelTaskCollection((uint) numberOfThreads);
 
             for (int i = 0; i < numberOfThreads; i++)
                 _multiParallelTask.Add(new BoidEnumerator(_entityViews, countn * i, countn));
@@ -124,7 +125,7 @@ namespace Svelto.ECS.Example.Parallelism
         {
 #if TURBO_EXAMPLE && UNITY_EDITOR
 //not needed on an actual client, but unity doesn't stop other threads when the execution is stopped
-            _multiParallelTask.ClearAndKill();
+            _multiParallelTask.Dispose();
 #endif
         }
 
@@ -171,7 +172,7 @@ namespace Svelto.ECS.Example.Parallelism
         {
             public object Current  {   get { return null;  }  }
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
-            public BoidEnumerator(DataStructures.FasterReadOnlyList<BoidEntityView> entityViews, int start, int countn)
+            public BoidEnumerator(ReadOnlyCollectionStruct<BoidEntityView> entityViews, int start, int countn)
             {
 #else
             public BoidEnumerator(BoidEntityView[] entityViews, int start, int countn)
@@ -240,7 +241,7 @@ namespace Svelto.ECS.Example.Parallelism
             int _countn;
             int _start;
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
-            DataStructures.FasterReadOnlyList<BoidEntityView> _entityViews;
+            ReadOnlyCollectionStruct<BoidEntityView> _entityViews;
 #else
             BoidEntityView[] _entityViews;
 #endif

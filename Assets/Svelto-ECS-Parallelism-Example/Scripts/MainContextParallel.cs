@@ -1,6 +1,7 @@
 //#define DONT_TRY_THIS_AT_HOME
 
 using Svelto.Context;
+using Svelto.Tasks;
 using UnityEngine;
 
 //Main is the Application Composition Root.
@@ -11,7 +12,7 @@ namespace Svelto.ECS.Example.Parallelism
     {
         public const int value = 64 * 4000;
     }
-    public class ParallelCompositionRoot : ICompositionRoot
+    public class ParallelCompositionRoot : IUnityCompositionRoot
     {
         public ParallelCompositionRoot()
         {
@@ -20,7 +21,7 @@ namespace Svelto.ECS.Example.Parallelism
             _contextNotifier = new ContextNotifier();
         }
 
-        void ICompositionRoot.OnContextCreated(UnityContext contextHolder)
+        void IUnityCompositionRoot.OnContextCreated(UnityContext contextHolder)
         {
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE || THIRD_TIER_EXAMPLE || FOURTH_TIER_EXAMPLE
             var tasksCount = NumberOfEntities.value;
@@ -48,11 +49,11 @@ namespace Svelto.ECS.Example.Parallelism
                 entityFactory.BuildEntity<BoidEntityDescriptor>(i, implementorArray);
 
 #else
-                entityFactory.BuildEntity<BoidEntityDescriptor>(i);
+                entityFactory.BuildEntity<BoidEntityDescriptor>(i, null);
 #endif
             }
 
-            entityFactory.BuildEntity<GUITextEntityDescriptor>(0, 
+            entityFactory.BuildEntity<GUITextEntityDescriptor>(0, 1, 
                 contextHolder.GetComponentsInChildren<PrintIteration>());
 #endif
 #endif
@@ -64,7 +65,7 @@ namespace Svelto.ECS.Example.Parallelism
         void ICompositionRoot.OnContextDestroyed()
         {
             _contextNotifier.NotifyFrameworkDeinitialized();       
-            TaskRunner.Instance.StopAndCleanupAllDefaultSchedulerTasks();
+            TaskRunner.StopAndCleanupAllDefaultSchedulers();
         }
 
         IContextNotifer _contextNotifier;
