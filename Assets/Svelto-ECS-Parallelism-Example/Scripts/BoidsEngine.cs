@@ -8,10 +8,10 @@ using UnityEngine;
 namespace Svelto.ECS.Example.Parallelism
 {
     class BoidsEngine : SingleEntityViewEngine<PrintTimeEntityView>, 
-                        IQueryingEntityViewEngine,
+                        IQueryingEntitiesEngine,
                         Context.IWaitForFrameworkDestruction
     {
-        public IEntityViewsDB entityViewsDB { get; set; }
+        public IEntitiesDB entitiesDB { get; set; }
         
 #if TURBO_EXAMPLE
         public const uint NUM_OF_THREADS = 8; //must be divisible by 4 for this exercise as I am not handling reminders
@@ -90,11 +90,11 @@ namespace Svelto.ECS.Example.Parallelism
             do
             {
 #if FIRST_TIER_EXAMPLE || SECOND_TIER_EXAMPLE
-                _entityViews = entityViewsDB.QueryEntityViews<BoidEntityView>();
+                _entityViews = entitiesDB.QueryEntityViews<BoidEntityView>();
                 count = _entityViews.Count;
 #endif
 #if FOURTH_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-                _entityViews = entityViewsDB.QueryEntities<BoidEntityView>(out count);           
+                _entityViews = entitiesDB.QueryEntities<BoidEntityView>(out count);           
 #endif
                 yield return null;
             } while (count == 0);
@@ -115,6 +115,8 @@ namespace Svelto.ECS.Example.Parallelism
 
             Update().ThreadSafeRunOnSchedule(StandardSchedulers.updateScheduler);           
         }
+
+        
 
         public void Ready()
         {
