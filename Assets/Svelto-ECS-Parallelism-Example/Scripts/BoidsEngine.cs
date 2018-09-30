@@ -46,7 +46,7 @@ namespace Svelto.ECS.Example.Parallelism
                 //note: RunOnSchedule (and ThreadSafeRunOnSchedule) allows to continue
                 //the operation on another runner without stalling the current one.
                 //yielding it allows the current operation to wait for the result.
-                yield return _boidEnumerator.ThreadSafeRunOnSchedule(_syncRunner);
+                yield return _boidEnumerator.RunOnScheduler(_syncRunner);
 #endif
                 //run the cached enumerator on the next coroutine phase, yield until it's done. 
                 //The thread will spin until is done. Yielding an enumerator on the same
@@ -94,7 +94,7 @@ namespace Svelto.ECS.Example.Parallelism
                 count = _entityViews.Count;
 #endif
 #if FOURTH_TIER_EXAMPLE || THIRD_TIER_EXAMPLE
-                _entityViews = entitiesDB.QueryEntities<BoidEntityView>(out count);           
+                _entityViews = entitiesDB.QueryEntities<BoidEntityView>(ExclusiveGroups.BoidGroup, out count);           
 #endif
                 yield return null;
             } while (count == 0);
@@ -113,10 +113,8 @@ namespace Svelto.ECS.Example.Parallelism
 #endif
             _testEnumerator = new TestEnumerator(_printEntityView);
 
-            Update().ThreadSafeRunOnSchedule(StandardSchedulers.updateScheduler);           
+            Update().RunOnScheduler(StandardSchedulers.updateScheduler);           
         }
-
-        
 
         public void Ready()
         {
@@ -259,6 +257,12 @@ namespace Svelto.ECS.Example.Parallelism
 #endif
         TestEnumerator _testEnumerator;
         PrintTimeEntityView _printEntityView;
+    }
+
+    static class ExclusiveGroups
+    {
+        public static readonly ExclusiveGroup BoidGroup = new ExclusiveGroup();
+        public static readonly ExclusiveGroup UIGroup = new ExclusiveGroup();
     }
 }
 #endif

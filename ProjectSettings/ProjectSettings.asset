@@ -531,7 +531,7 @@ PlayerSettings:
   webGLCompressionFormat: 1
   webGLLinkerTarget: 0
   scriptingDefineSymbols:
-    1: FOURTH_TIER_EXAMPLE;TURBO_EXAMPLE
+    1: FOURTH_TIER_EXAMPLE
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 1

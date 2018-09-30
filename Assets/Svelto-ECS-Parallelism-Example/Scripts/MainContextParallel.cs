@@ -32,7 +32,7 @@ namespace Svelto.ECS.Example.Parallelism
                 crazyness.AddComponent<UnityWay>();
             }
 #else
-            _enginesRoot = new EnginesRoot(new Schedulers.Unity.UnitySumbmissionEntityViewScheduler());
+            _enginesRoot = new EnginesRoot(new Schedulers.Unity.UnityEntitySubmissionScheduler());
             IEntityFactory entityFactory = _enginesRoot.GenerateEntityFactory();
 
             var boidsEngine = new BoidsEngine();
@@ -49,11 +49,11 @@ namespace Svelto.ECS.Example.Parallelism
                 entityFactory.BuildEntity<BoidEntityDescriptor>(i, implementorArray);
 
 #else
-                entityFactory.BuildEntity<BoidEntityDescriptor>(i, null);
+                entityFactory.BuildEntity<BoidEntityDescriptor>(new EGID(i, ExclusiveGroups.BoidGroup), null);
 #endif
             }
 
-            entityFactory.BuildEntity<GUITextEntityDescriptor>(0, 1, 
+            entityFactory.BuildEntity<GUITextEntityDescriptor>(new EGID(0, ExclusiveGroups.UIGroup), 
                 contextHolder.GetComponentsInChildren<PrintIteration>());
 #endif
 #endif
@@ -68,7 +68,7 @@ namespace Svelto.ECS.Example.Parallelism
             TaskRunner.StopAndCleanupAllDefaultSchedulers();
         }
 
-        IContextNotifer _contextNotifier;
+        readonly IContextNotifer _contextNotifier;
         EnginesRoot _enginesRoot;
     }
 
